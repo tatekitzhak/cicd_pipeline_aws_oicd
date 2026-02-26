@@ -6,7 +6,7 @@ name: ci-pipeline
 on:
   push:
     branches:
-      - main
+      - cicd_pipeline_aws_oicd
   pull_request:
     branches:
       - main
