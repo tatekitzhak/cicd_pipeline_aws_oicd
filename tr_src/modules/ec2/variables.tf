@@ -13,3 +13,4 @@ variable "sg_id" {
 #   key_name   = "deployer-key"
 #   public_key = file("~/.ssh/cicd_terraform_github_action.pub")
 # }
+

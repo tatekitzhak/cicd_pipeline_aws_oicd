@@ -9,7 +9,6 @@ Component:
 
 */
 
-
 locals {
   # Generates a timestamp like: 2026-02-23T14:30:05Z
   raw_time = timestamp()
@@ -18,8 +17,9 @@ locals {
   formatted_time = formatdate("YYYYMMDDHHmmss", local.raw_time)
 }
 
+
 resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key-${locals.formatted_time}"
+  key_name   = "deployer-key-${local.formatted_time}"
   # Note: No "~/", just the filename relative to the terraform files
   public_key = file("${path.module}/cicd_terraform_github_action.pub")
 }
@@ -36,7 +36,7 @@ resource "aws_instance" "ubuntu_ec2_instance_terraform" {
   key_name                    = aws_key_pair.deployer.key_name
 
   tags = {
-    Name = "aws-ec2-instance-terraform-${locals.formatted_time}"
+    Name = "aws-ec2-instance-terraform-${local.formatted_time}"
   }
 
   # Docker pre-installed via user_data so CD can pull from Docker Hub and run containers
@@ -49,7 +49,7 @@ resource "aws_internet_gateway" "terraform_gw" {
   vpc_id = var.vpc_id
 
   tags = {
-    Name        = "terraform_internet_gateway-${locals.formatted_time}"
+    Name        = "terraform_internet_gateway-${local.formatted_time}"
     Environment = "TF_development_internet_gateway"
   }
 }
@@ -64,7 +64,7 @@ resource "aws_subnet" "tf_subnet_public" {
   # availability_zone       = element(local.availability_zones, count.index)
 
   tags = {
-    Name        = "terraform_subnet_public_${locals.formatted_time}"
+    Name        = "terraform_subnet_public_${local.formatted_time}"
     Environment = "TF_development_subnet_public"
   }
 }
@@ -79,7 +79,7 @@ resource "aws_route_table" "terraform_rt_public" {
   }
 
   tags = {
-    Name        = "terraform__rt_public_${locals.formatted_time}"
+    Name        = "terraform__rt_public_${local.formatted_time}"
     Environment = "TF_development_rt_public"
   }
 }

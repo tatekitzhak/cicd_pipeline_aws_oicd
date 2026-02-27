@@ -1,12 +1,5 @@
 # IAM instance profile for SSM so the CD job can run SSM SendCommand on this instance.
 
-locals {
-  # Generates a timestamp like: 2026-02-23T14:30:05Z
-  raw_time = timestamp()
-  
-  # Formats to: 20260223143005 (no special characters)
-  formatted_time = formatdate("YYYYMMDDHHmmss", local.raw_time)
-}
 
 resource "aws_iam_role" "ec2_ssm" {
   name        = "ec2-ssm-role-${local.formatted_time }" # Example: CreatedDate = "20260223143005"
@@ -36,6 +29,6 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_managed" {
 }
 
 resource "aws_iam_instance_profile" "ec2_ssm" {
-  name = "ec2-ssm-instance-profile"
+  name = "ec2-ssm-instance-profile-${ local.formatted_time }"
   role = aws_iam_role.ec2_ssm.name
 }
