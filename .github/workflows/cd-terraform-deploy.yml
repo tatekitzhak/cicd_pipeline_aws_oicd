@@ -51,6 +51,11 @@ jobs:
 
       # - name: Checkout
       #   uses: actions/checkout@v2
+      - name: Debug OIDC Claims
+        run: |
+          ID_TOKEN=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
+          echo "JWT Header/Payload:"
+          echo $ID_TOKEN | cut -d. -f2 | base64 -d | jq .
 
       # Establish an AWS Account
       - name: Configure AWS Credentials
