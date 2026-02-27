@@ -26,16 +26,16 @@ module "vpc" {
   vpc_cidr = var.vpc_cidr
 }
 
-# module "sg" {
-#   source = "./modules/sg"
-#   vpc_id = module.vpc.vpc_id
-# }
+module "sg" {
+  source = "./modules/sg"
+  vpc_id = module.vpc.vpc_id
+}
 
-# module "ec2" {
-#   source = "./modules/ec2"
-#   vpc_id = module.vpc.vpc_id
-#   sg_id  = module.sg.security_group_id
-# }
+module "ec2" {
+  source = "./modules/ec2"
+  vpc_id = module.vpc.vpc_id
+  sg_id  = module.sg.security_group_id
+}
 
 
 data "aws_caller_identity" "current" {}

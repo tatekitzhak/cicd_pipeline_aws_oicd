@@ -47,10 +47,7 @@ jobs:
         if: github.event_name == 'workflow_run'
         run: ls -R
 
-      - run: echo "Deploying..."
-
-      # - name: Checkout
-      #   uses: actions/checkout@v2
+      # Debug OIDC Claims
       - name: Debug OIDC Claims
         run: |
           ID_TOKEN=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
@@ -131,9 +128,9 @@ jobs:
         run: echo $TIME $R_TIME $F_TIME $YEAR $DAY
       - run: echo "TIME; ${{ toJson(steps.current-time.outputs)}}"
       - name: DEPLOY JOB; Deployment started after successful CI run
-        run: echo "A =>  secrets; ${{ secrets }}"
-      - run: echo "B => github;  ${{ github }}"
-      - run: echo "C => github.event; ${{github.event}}"
+        run: echo "A =>  secrets; ${{ toJson(secrets) }}"
+      - run: echo "B => github;  ${{ toJson(github) }}"
+      - run: echo "C => github.event; ${{ toJson(github.event) }}"
   #     - name: Checkout Repository
   #       uses: actions/checkout@v4
 
