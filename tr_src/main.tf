@@ -57,7 +57,7 @@ output "caller_user_id" {
 resource "null_resource" "create_file_localy" {
   provisioner "local-exec" {
 
-     command = <<EOT
+    command = <<EOT
                   echo 'AWS User Account Info : ${jsonencode(data.aws_caller_identity.current)}\n' > aws_user_account_info.txt
                 EOT
   }

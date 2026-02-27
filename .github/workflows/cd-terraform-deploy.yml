@@ -9,7 +9,12 @@ on:
     types: [completed]
   # workflow_dispatch: {}   # Allow manual run from Actions tab
 
+# permission can be added at job level or workflow level
+permissions:
+  id-token: write # This permission setting enables the workflow to request and use a JSON Web Token (JWT) from GitHub's OpenID Connect (OIDC) provider. 
+  contents: read # This permission grants the GITHUB_TOKEN read-only access to the repository's contents (for actions/checkout@v2). 
 
+  
 ####
 # Getting start trigger the schedule for this job definition. 
 ###
@@ -20,9 +25,6 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run && github.event.workflow_run.conclusion == 'success')
     name: Set up AWS through Terraform
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write # This permission setting enables the workflow to request and use a JSON Web Token (JWT) from GitHub's OpenID Connect (OIDC) provider. 
-      contents: read # This permission grants the GITHUB_TOKEN read-only access to the repository's contents (for actions/checkout@v2). 
     
     defaults:
       run:
