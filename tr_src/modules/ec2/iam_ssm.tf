@@ -1,7 +1,15 @@
 # IAM instance profile for SSM so the CD job can run SSM SendCommand on this instance.
 
+locals {
+  # Generates a timestamp like: 2026-02-23T14:30:05Z
+  raw_time = timestamp()
+  
+  # Formats to: 20260223143005 (no special characters)
+  formatted_time = formatdate("YYYYMMDDHHmmss", local.raw_time)
+}
+
 resource "aws_iam_role" "ec2_ssm" {
-  name        = "ec2-ssm-role"
+  name        = "ec2-ssm-role-${local.formatted_time }" # Example: CreatedDate = "20260223143005"
   description = "Role for EC2 so GitHub Actions CD can run SSM SendCommand"
 
   assume_role_policy = jsonencode({
@@ -18,7 +26,7 @@ resource "aws_iam_role" "ec2_ssm" {
   })
 
   tags = {
-    Name = "ec2-ssm-role"
+    Name = "ec2-ssm-role-${local.formatted_time }" # Example: CreatedDate = "20260223143005"
   }
 }
 
