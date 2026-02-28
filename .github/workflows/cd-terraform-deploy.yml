@@ -96,11 +96,11 @@ jobs:
       #
       # Sleep for 1 minute (60 seconds)
       - name: Sleep for 1 minute
-        run: sleep 60
+        run: sleep 120
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
-        
+
       - name: List files in the repository (tree)
         run: tree .
   
