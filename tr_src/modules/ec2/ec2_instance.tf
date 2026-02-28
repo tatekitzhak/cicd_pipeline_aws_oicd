@@ -32,7 +32,7 @@ resource "aws_instance" "ubuntu_ec2_instance_terraform" {
   subnet_id                   = aws_subnet.tf_subnet_public.id
   vpc_security_group_ids      = [var.sg_id]
   associate_public_ip_address = true
-  iam_instance_profile        = aws_iam_instance_profile.ec2_ssm.name
+  # iam_instance_profile        = aws_iam_instance_profile.ec2_ssm.name
   key_name                    = aws_key_pair.deployer.key_name
 
   tags = {
@@ -40,7 +40,37 @@ resource "aws_instance" "ubuntu_ec2_instance_terraform" {
   }
 
   # Docker pre-installed via user_data so CD can pull from Docker Hub and run containers
-  user_data = file("${path.module}/install_docker_on_ubuntu_aws_ec2.sh")
+  # user_data = file("${path.module}/install_docker_on_ubuntu_aws_ec2.sh")
+  user_data = <<-EOF
+              #!/bin/bash
+              
+              # 1. Setup Logging immediately
+              LOG="/var/log/install_docker_on_ubuntu_aws_ec2.log"
+              exec > >(tee -a "$LOG") 2>&1
+              
+              echo "--- LOG START: $(date) ---"
+              set -e  # Exit on any error
+
+              # 2. Add Docker's official GPG key & Repository
+              apt-get update -y
+              apt-get install -y ca-certificates curl gnupg
+              install -m 0755 -d /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              chmod a+r /etc/apt/keyrings/docker.gpg
+
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+              # 3. Install Docker Engine
+              apt-get update -y
+              apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+              # 4. Enable Service & Set Permissions
+              systemctl enable docker
+              systemctl start docker
+              usermod -aG docker ubuntu
+
+              echo "--- INSTALL COMPLETE: $(docker --version) ---"
+              EOF
 }
 
 
