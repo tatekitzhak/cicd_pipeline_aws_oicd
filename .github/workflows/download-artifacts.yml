@@ -1,0 +1,50 @@
+name: Build and Download Artifacts
+
+on:
+  # This triggers when another workflow named "Build" completes
+  workflow_run:
+    workflows: ["terraform-validate-stage"]
+    types:
+      - completed
+  # Allows you to also run this manually for testing
+  workflow_dispatch:
+
+jobs:
+  build1:
+    name: Build and Restore
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 1. Recreate the build directory and dummy file so paths align
+      - name: Build Application
+        run: |
+          mkdir -p build
+          echo "Building... (simulating build output)"
+          echo "This is some data" > build/build_output.txt
+
+      # 2. Download artifact ONLY if triggered by another workflow run
+      - name: Download artifact from triggering run
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact-output
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ./build
+
+      # 3. Debug and verify the workspace contents
+      - name: Check current directory
+        run: |
+          pwd
+          ls -ltra
+
+      # 4. View directory tree structure
+      - name: View directory tree
+        run: |
+          if command -v tree &> /dev/null; then
+            tree .
+          else
+            ls -R
+          fi

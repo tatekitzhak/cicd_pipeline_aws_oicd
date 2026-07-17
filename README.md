@@ -27,7 +27,7 @@ Automate AWS Infra Deployment using Terraform and GitHub Actions Workflows
 }
 ```
 
-```
+```bash
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -49,6 +49,8 @@ Automate AWS Infra Deployment using Terraform and GitHub Actions Workflows
     ]
 }
 ```
+
+
 terraform_and_gitHub_action_workflows
 
 Automate AWS Infra Deployment using Terraform and GitHub Actions Workflows

@@ -1,4 +1,4 @@
-name: ci-pipeline
+name: terraform-validate-stage
 
 ###
 # Triggers: run on push and pull_request to main
@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   # --- Validate Terraform in tr_src ---
-  terraform-validate:
+  terraform-validate-stage:
     name: Terraform validate
     runs-on: ubuntu-latest
     defaults:
@@ -62,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4 # compresses and uploads the entire contents of your current working directory to GitHub's servers as a downloadable zip file named "build-artifact-output"
         with:
           name: build-artifact-output # This is the name required if another job needs to download it later
-          path: . # ./build
+          path: ./build
           if-no-files-found: error
 
   # --- Unit / integration tests ---
@@ -98,6 +98,6 @@ jobs:
   ci-success:
     name: CI success
     runs-on: ubuntu-latest
-    needs: [terraform-validate, build, test, security-scan]
+    needs: [terraform-validate-stage, build, test, security-scan]
     steps:
       - run: echo "All CI jobs completed successfully."
