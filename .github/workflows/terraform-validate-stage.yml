@@ -56,8 +56,9 @@ jobs:
       - name: Build Application
         run: |
           echo "Building... (simulating build output)"
-          echo "This is some data" > build_output.txt
-
+          mkdir -p build
+          echo "This is some data" > build/build_output.txt
+          
       - name: Upload Build Data
         uses: actions/upload-artifact@v4 # compresses and uploads the entire contents of your current working directory to GitHub's servers as a downloadable zip file named "build-artifact-output"
         with:
