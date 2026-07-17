@@ -109,6 +109,35 @@ jobs:
   # --- DEPLOY JOB: Deployment started after successful CI run ---
   ##
   
+  fetch_EC2_information:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: arn:aws:iam::123456789012:role/GitHubActionsEC2Role
+      #     aws-region: us-west-2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }} 
+          aws-region: ${{ secrets.AWS_REGION }} 
+      - name: Fetch and Parse EC2 Info
+        id: ec2-data
+        run: |
+          # Fetch instances matching a specific tag (e.g., Name=MyWebServer)
+          INSTANCE_JSON=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=aws-ec2-instance-terraform-20260321015607" \
+            --query "Reservations[*].Instances[*].InstanceId" \
+            --output text)
+          
+          # Store output into a variable for subsequent steps
+          echo "instance_id=$INSTANCE_JSON" >> $GITHUB_OUTPUT
+          echo "Found Instance ID: $INSTANCE_JSON" 
+
   deploy:
     name: Deploy Docker to EC2
     needs: [ terraform ]
