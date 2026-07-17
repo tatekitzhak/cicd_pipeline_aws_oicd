@@ -130,13 +130,13 @@ jobs:
         run: |
           # Fetch instances matching a specific tag (e.g., Name=MyWebServer)
           INSTANCE_JSON=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=aws-ec2-instance-terraform-20260321015607" \
+            --filters "Name=tag:Name,Values=${{secrets.AWS_EC2_INSTANCE_NAME}}" \
             --query "Reservations[*].Instances[*].InstanceId" \
             --output text)
           
           # Store output into a variable for subsequent steps
           echo "instance_id=$INSTANCE_JSON" >> $GITHUB_OUTPUT
-          echo "Found Instance ID: $INSTANCE_JSON" 
+          echo "Found Instance ID: $INSTANCE_JSON , $GITHUB_OUTPUT" 
 
   deploy:
     name: Deploy Docker to EC2
