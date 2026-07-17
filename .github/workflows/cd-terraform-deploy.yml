@@ -9,7 +9,9 @@ on:
     types: [completed]
   # workflow_dispatch: {}   # Allow manual run from Actions tab
 
+##
 # permission can be added at job level or workflow level
+##
 permissions:
   id-token: write # This permission setting enables the workflow to request and use a JSON Web Token (JWT) from GitHub's OpenID Connect (OIDC) provider. 
   contents: read # This permission grants the GITHUB_TOKEN read-only access to the repository's contents (for actions/checkout@v2). 
@@ -34,7 +36,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Download artifact (from triggering CI run)
+      - name: Download artifact # from triggering previous runing action workflow
         if: github.event_name == 'workflow_run'
         uses: actions/download-artifact@v4
         with:

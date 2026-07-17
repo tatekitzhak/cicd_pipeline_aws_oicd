@@ -26,6 +26,29 @@ Automate AWS Infra Deployment using Terraform and GitHub Actions Workflows
     ]
 }
 ```
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::<Account ID>:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                },
+                "StringLike": {
+                    "token.actions.githubusercontent.com:sub": "repo:<BRANCH_NAME>/<REPOSITORY_NAME>:*"
+                }
+            }
+        }
+    ]
+}
+```
 terraform_and_gitHub_action_workflows
 
 Automate AWS Infra Deployment using Terraform and GitHub Actions Workflows

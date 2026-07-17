@@ -59,10 +59,10 @@ jobs:
           echo "This is some data" > build_output.txt
 
       - name: Upload Build Data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4 # compresses and uploads the entire contents of your current working directory to GitHub's servers as a downloadable zip file named "build-artifact-output"
         with:
-          name: build-artifact-output
-          path: .
+          name: build-artifact-output # This is the name required if another job needs to download it later
+          path: . # ./build
           if-no-files-found: error
 
   # --- Unit / integration tests ---
