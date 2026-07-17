@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # 1. Recreate the build directory and dummy file so paths align
       - name: Build Application
@@ -27,7 +27,7 @@ jobs:
       # 2. Download artifact ONLY if triggered by another workflow run
       - name: Download artifact from triggering run
         if: github.event_name == 'workflow_run'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: build-artifact-output
           run-id: ${{ github.event.workflow_run.id }}
