@@ -31,7 +31,7 @@ jobs:
             role-to-assume: ${{ secrets.AWS_ROLE }} 
             aws-region: ${{ secrets.AWS_REGION }}
         
-        - name: Fetch and Parse EC2 Info
+        - name: Fetch EC2 Informations
           id: ec2_data
           run: |
             # Fetch instances matching a specific tag (e.g., Name=MyWebServer)
@@ -73,7 +73,7 @@ jobs:
                 role-to-assume: ${{ secrets.AWS_ROLE }} #
                 aws-region: ${{ env.AWS_REGION }}
             
-            - name: Fetch and Parse EC2 Info
+            - name: Fetch a EC2 INSTANCE ID
               id: ec2_data
               run: |
                 echo "Checking environment parameters..."

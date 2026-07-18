@@ -1,0 +1,22 @@
+name: Shared Time Utility
+
+on:
+  workflow_call:
+    # This exposes the outputs to any workflow that calls this file
+    outputs:
+      formatted_time:
+        description: "The YYYYMMDD-HH formatted time"
+        value: ${{ jobs.get-time-job.outputs.F_TIME }}
+
+jobs:
+  get-time-job:
+    runs-on: ubuntu-latest
+    outputs:
+      F_TIME: ${{ steps.current-time.outputs.formattedTime }}
+    steps:
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYYMMDD-HH
+          utcOffset: "+08:00"
