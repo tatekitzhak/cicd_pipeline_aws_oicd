@@ -19,13 +19,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # --- Validate Terraform in terraformsrc ---
+  # --- Validate Terraform in terraform ---
   terraform-validate-stage:
     name: Terraform validate
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: terraformsrc
+        working-directory: terraform
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6
