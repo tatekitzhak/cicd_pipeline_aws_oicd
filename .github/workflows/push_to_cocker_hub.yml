@@ -42,5 +42,5 @@ jobs:
           file: ./Dockerfile
           push: true
         #   repository: ${{secrets.DOCKER_USERNAME}}/nginx_web_app_img
-          tags: ${{steps.meta.outputs.tags}}
+          tags: ${{steps.meta.outputs.tags}}_${{ needs.call_time.outputs.formatted_time }}
           labels: ${{steps.meta.outputs.labels}}      
