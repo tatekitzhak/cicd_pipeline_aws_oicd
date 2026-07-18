@@ -31,7 +31,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          file: ./Dockerfile
           push: true
-          repository: ${{secrets.DOCKER_USERNAME}}/nginx_web_app_img
+        #   repository: ${{secrets.DOCKER_USERNAME}}/nginx_web_app_img
           tags: ${{steps.meta.outputs.tags}}
           labels: ${{steps.meta.outputs.labels}}      

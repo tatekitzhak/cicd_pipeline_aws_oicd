@@ -19,16 +19,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # --- Validate Terraform in tr_src ---
+  # --- Validate Terraform in terraformsrc ---
   terraform-validate-stage:
     name: Terraform validate
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: tr_src
+        working-directory: terraformsrc
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build Application
         run: |
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run tests
         run: |
@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run security checks
         run: |

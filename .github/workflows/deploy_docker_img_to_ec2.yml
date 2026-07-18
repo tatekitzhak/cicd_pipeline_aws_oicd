@@ -1,0 +1,153 @@
+# To manually deploy a Docker image from Docker Hub to AWS EC2
+name: manually-deploy-docker-img-from-docker-hub # 3
+
+on:
+#   workflow_run:
+#     workflows: ["Build-AWS-Infrastructure-with-Terraform"]
+#     types: [completed]
+
+  workflow_dispatch:   
+
+permissions:
+    id-token: write    # Required for AWS OIDC
+    contents: read     # Required to checkout code
+    actions: read      # Required to download artifacts from other runs
+
+jobs:
+    fetch_aws_ec2_instance_id:
+      name: Extract EC2 instance ID from AWS
+      runs-on: ubuntu-latest   
+
+      outputs:
+        EC2_INSTANCE_ID: ${{ steps.ec2_data.outputs.ec2_instance_id }}
+
+      steps:
+        - name: Checkout Repository Code
+          uses: actions/checkout@v7
+
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: ${{ secrets.AWS_ROLE }} 
+            aws-region: ${{ secrets.AWS_REGION }}
+        
+        - name: Fetch and Parse EC2 Info
+          id: ec2_data
+          run: |
+            # Fetch instances matching a specific tag (e.g., Name=MyWebServer)
+            INSTANCE_JSON=$(aws ec2 describe-instances \
+                --filters "Name=tag:Name,Values=${{secrets.AWS_EC2_INSTANCE_NAME}}" \
+                --query "Reservations[*].Instances[*].InstanceId" \
+                --output text)
+            
+            # Write directly to the GitHub Output stream
+            echo "ec2_instance_id=$INSTANCE_JSON" >> "$GITHUB_OUTPUT"
+            echo "Found Instance ID: $INSTANCE_JSON , $GITHUB_OUTPUT"
+           
+      
+    deploy-docker-image-from-docker-hub-to-AWS-EC2:
+        name: Deploy Keycloak Stack to AWS EC2 via SSM
+        needs:
+            - fetch_aws_ec2_instance_id
+        runs-on: ubuntu-latest
+        
+        permissions:
+            id-token: write   
+            contents: read   
+            issues: write
+            pull-requests: write
+        
+        env:
+            AWS_REGION: ${{ secrets.AWS_REGION }}
+            EC2_INSTANCE_ID: ${{ needs.fetch_aws_ec2_instance_id.outputs.EC2_INSTANCE_ID }}
+            DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+            DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v6
+        
+            - name: Configure AWS Credentials via OIDC
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                aws-region: ${{ env.AWS_REGION }}
+            
+            - name: Fetch and Parse EC2 Info
+              id: ec2_data
+              run: |
+                echo "Checking environment parameters..."
+                echo "Found Instance ID: $EC2_INSTANCE_ID"
+            # - name: Deploy Test Stack via SSM (Hello World & Nginx)
+            #   run: |
+            #       set -e
+            #       echo "--- EC2_INSTANCE_ID ---: $EC2_INSTANCE_ID "
+                  
+            #       # 0. Get the Public IP of the EC2 instance dynamically
+            #       PUBLIC_IP=$(aws ec2 describe-instances --instance-ids "$EC2_INSTANCE_ID" --query "Reservations[0].Instances[0].PublicIpAddress" --output text)
+            #       echo "Deploying to: http://$PUBLIC_IP:8080"
+          
+            #       # 1. Define the actual Keycloak + Nginx YAML
+            #       COMPOSE_YAML="services:
+            #         keycloak_admin_console:
+            #           image: $DOCKER_USER/keycloak-admin-console:latest
+            #           command: start-dev
+            #           environment:
+            #             KEYCLOAK_ADMIN: admin
+            #             KEYCLOAK_ADMIN_PASSWORD: admin
+            #             KC_PROXY: edge
+            #             KC_HOSTNAME_STRICT: \"false\"
+            #             KC_HTTP_ENABLED: true
+            #             # Use the Public IP here instead of localhost
+            #             KC_HOSTNAME_ADMIN_URL: http://$PUBLIC_IP:8080
+            #             KC_HOSTNAME_URL: http://$PUBLIC_IP:8080
+            #           networks:
+            #             - keycloak_net
+            #         nginx_keycloak:
+            #           image: $DOCKER_USER/keycloak-nginx-proxy:latest
+            #           ports:
+            #             - \"8080:80\"
+            #           depends_on:
+            #             - keycloak_admin_console
+            #           networks:
+            #             - keycloak_net
+            #       networks:
+            #         keycloak_net:
+            #           driver: bridge"
+          
+            #       # 2. Base64 encode
+            #       B64_COMPOSE=$(echo "$COMPOSE_YAML" | base64 -w 0)
+          
+            #       # 3. Create JSON for SSM using absolute path /home/ubuntu/
+            #       COMMANDS_JSON=$(jq -n --arg b64 "$B64_COMPOSE" \
+            #       '{commands: [
+            #           "mkdir -p /home/ubuntu/test-app",
+            #           "echo \($b64) | base64 -d > /home/ubuntu/test-app/docker-compose.yml",
+            #           "echo \"--- Verifying File Location ---\"",
+            #           "ls -l /home/ubuntu/test-app/docker-compose.yml",
+            #           "echo \"--- Starting Docker Compose ---\"",
+            #           "sudo docker-compose -f /home/ubuntu/test-app/docker-compose.yml up -d --remove-orphans",
+            #           "sleep 2",
+            #           "echo \"--- Status Check ---\"",
+            #           "sudo docker ps -a"
+            #       ]}')
+          
+            #       CMD_ID=$(aws ssm send-command \
+            #         --document-name "AWS-RunShellScript" \
+            #         --instance-ids "$EC2_INSTANCE_ID" \
+            #         --parameters "$COMMANDS_JSON" \
+            #         --output text --query "Command.CommandId")
+          
+            #       echo "Command ID: $CMD_ID"
+          
+            #       # Polling Loop
+            #       for i in $(seq 1 36); do
+            #         STATUS=$(aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$EC2_INSTANCE_ID" --query "Status" --output text 2>/dev/null || echo "Pending")
+            #         echo "Deploy status: $STATUS"
+            #         [ "$STATUS" = "Success" ] && break
+            #         [[ "$STATUS" == "Failed" || "$STATUS" == "TimedOut" || "$STATUS" == "Cancelled" ]] && exit 1
+            #         sleep 10
+            #       done
+          
+            #       echo "--- EC2 Execution Output ---"
+            #       aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$EC2_INSTANCE_ID" --query "StandardOutputContent" --output text

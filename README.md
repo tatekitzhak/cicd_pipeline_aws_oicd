@@ -58,7 +58,7 @@ I Have is build scritp:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build Application
         run: |
@@ -79,7 +79,7 @@ I would like do something like this:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
      
       - name: Download artifact # from triggering previous runing action workflow
@@ -130,7 +130,7 @@ My script:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build Application
         run: |
