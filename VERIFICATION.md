@@ -15,7 +15,7 @@ Use this checklist to ensure the pipeline is secure and the EC2 instance is read
 - **What you must do**:
   - Set **Repository variable** (or Terraform variable) `github_repository` to your repo (e.g. `myorg/ci_cd_pipeline`).
   - After first apply, set GitHub **secret** `AWS_ROLE` to the role ARN (Terraform output `github_actions_role_arn`).
-  - The workflow uses `aws-actions/configure-aws-credentials@v4` with `role-to-assume: ${{ secrets.AWS_ROLE }}` and `id-token: write` (no `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`).
+  - The workflow uses `aws-actions/configure-aws-credentials@v6` with `role-to-assume: ${{ secrets.AWS_ROLE }}` and `id-token: write` (no `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`).
 
 ---
 

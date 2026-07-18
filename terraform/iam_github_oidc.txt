@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------
 # GitHub OIDC (OpenID Connect) for Actions – no long-lived IAM keys
 # Terraform creates the Identity Provider and IAM Role; you assume the role
-# in the workflow via aws-actions/configure-aws-credentials@v4 with the role ARN.
+# in the workflow via aws-actions/configure-aws-credentials@v6 with the role ARN.
 # ------------------------------------------------------------------------------
 
 

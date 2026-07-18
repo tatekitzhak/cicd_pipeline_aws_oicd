@@ -50,7 +50,7 @@ jobs:
       # Establish an AWS Account
       - name: Configure AWS Credentials (OIDC for Terraform)
         uses: actions/checkout@v6
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ secrets.AWS_REGION }}
@@ -113,7 +113,7 @@ jobs:
       EC2_INSTANCE_ID: ${{ needs.terraform_deploy_aws_resources.outputs.instance_id }}
     steps:
       - name: Configure AWS Credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ env.AWS_REGION }}

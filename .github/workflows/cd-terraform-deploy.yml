@@ -51,7 +51,7 @@ jobs:
 
       # Establish an AWS Account
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }} 
           aws-region: ${{ secrets.AWS_REGION }} 
@@ -109,7 +109,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }} 
           aws-region: ${{ secrets.AWS_REGION }} 
@@ -129,7 +129,7 @@ jobs:
 
   deploy:
     name: Deploy Docker to EC2
-    needs: [ terraform ]
+    needs: [ fetch_EC2_information ]
     runs-on: ubuntu-latest
     # Only run if Build succeeded
     # Use a condition to ensure the job runs only if the prior workflow succeeded
@@ -161,7 +161,7 @@ jobs:
   #       uses: actions/checkout@v6
 
   #     - name: Configure AWS Credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
+  #       uses: aws-actions/configure-aws-credentials@v6
   #       with:
   #         role-to-assume: ${{ secrets.AWS_ROLE }}
   #         aws-region: ${{ secrets.AWS_REGION }}
